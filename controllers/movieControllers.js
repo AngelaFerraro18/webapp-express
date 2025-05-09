@@ -5,7 +5,12 @@ const connection = require('../data/db');
 function index(req, res) {
 
     //query per visualizzare tutti i film
-    const sql = `SELECT * FROM movies`;
+    const sql = `SELECT movies.*, AVG(reviews.vote) AS mean_votes
+    FROM
+        movies
+    LEFT JOIN
+        reviews ON movies.id = reviews.movie_id
+        GROUP BY movies.id`;
 
     connection.query(sql, (err, results) => {
         if (err) return res.status(500).json({
