@@ -11,7 +11,10 @@ function index(req, res) {
         if (err) return res.status(500).json({
             error: 'Database query error!'
         });
-        res.json(results);
+        res.json(results.map(result => ({
+            ...result,
+            image: 'http://127.0.0.1:3000/movies_cover/' + result.image
+        })));
     })
 }
 
