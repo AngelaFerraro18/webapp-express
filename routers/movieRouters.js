@@ -9,4 +9,7 @@ const router = express.Router();
 //index
 router.get('/', movieControllers.index);
 
+//show
+router.get('/:id', movieControllers.show);
+
 module.exports = router;
