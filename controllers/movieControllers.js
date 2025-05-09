@@ -34,7 +34,10 @@ function show(req, res) {
             error: 'Movie non trovato!'
         });
 
-        const movie = movieResults[0];
+        const movie = {
+            ...movieResults[0],
+            image: process.env.IMAGE_PATH + 'movies_cover/' + movieResults[0].image
+        };
 
         //query per visualizzare le reviews
         const sql = `SELECT reviews.* 
