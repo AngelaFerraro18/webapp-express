@@ -25,12 +25,26 @@ function show(req, res) {
     //query per visualizzare un movie
     const sql = `SELECT * FROM movies WHERE id= ?`;
 
-    connection.query(sql, [id], (err, results) => {
+    connection.query(sql, [id], (err, movieResults) => {
         if (err) return res.status(500).json({ error: 'Database query failed' });
-        if (results.length === 0) return res.status(404).json({
+        if (movieResults.length === 0) return res.status(404).json({
             error: 'Movie non trovato!'
         });
-        res.json(results[0]);
+
+        const movie = movieResults[0];
+
+        //query per visualizzare le reviews
+        const sql = `SELECT reviews.* 
+                        FROM
+                            reviews
+                    JOIN movies ON movies.id = reviews.movie_id
+                    WHERE reviews.movie_id =?`
+
+        connection.query(sql, [id], (err, reviewRes) => {
+            if (err) return res.status(500).json({ error: 'Database query failed!' });
+            movie.reviews = reviewRes;
+            res.json(movie);
+        })
     })
 
 }
