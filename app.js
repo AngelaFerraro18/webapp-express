@@ -14,6 +14,9 @@ const port = process.env.PORT || 3000;
 //decodifico con il body-parser
 app.use(express.json());
 
+//rendo accessibili li immagini in public
+app.use(express.static('public'));
+
 app.use('/movies', movieRouters);
 
 //gestione error: 500
