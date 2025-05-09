@@ -13,7 +13,7 @@ function index(req, res) {
         });
         res.json(results.map(result => ({
             ...result,
-            image: 'http://127.0.0.1:3000/movies_cover/' + result.image
+            image: process.env.IMAGE_PATH + 'movies_cover/' + result.image
         })));
     })
 }
