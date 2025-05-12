@@ -8,8 +8,15 @@ const movieRouters = require('./routers/movieRouters')
 const errorsHandler = require('./middleware/errorHandler');
 const notFound = require('./middleware/notFound');
 
+//importo il middleware per la gestione del CORS
+const cors = require('cors');
+console.log(process.env.FE_APP)
 const app = express();
 const port = process.env.PORT || 3000;
+
+app.use(cors({
+    origin: process.env.FE_APP
+}));
 
 //decodifico con il body-parser
 app.use(express.json());
