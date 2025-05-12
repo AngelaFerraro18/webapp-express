@@ -4,13 +4,22 @@ const connection = require('../data/db');
 //index
 function index(req, res) {
 
+    const { search } = req.query;
+
     //query per visualizzare tutti i film
-    const sql = `SELECT movies.*, AVG(reviews.vote) AS mean_votes
+    let sql = `SELECT movies.*, AVG(reviews.vote) AS mean_votes
     FROM
         movies
     LEFT JOIN
-        reviews ON movies.id = reviews.movie_id
-        GROUP BY movies.id`;
+        reviews ON movies.id = reviews.movie_id`;
+
+    if (search) {
+        sql += ` 
+        WHERE title LIKE "%${search}%" OR director LIKE "%${search}%" OR abstract LIKE "%${search}%"
+        `
+    }
+
+    sql += ` GROUP BY movies.id`;
 
     connection.query(sql, (err, results) => {
         if (err) return res.status(500).json({
