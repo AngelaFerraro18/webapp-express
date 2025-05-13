@@ -6,6 +6,9 @@ function index(req, res) {
 
     const { search } = req.query;
 
+    //creo un'array per i parametri
+    const searchParams = [];
+
     //query per visualizzare tutti i film
     let sql = `SELECT movies.*, AVG(reviews.vote) AS mean_votes
     FROM
@@ -15,13 +18,14 @@ function index(req, res) {
 
     if (search) {
         sql += ` 
-        WHERE title LIKE "%${search}%" OR director LIKE "%${search}%" OR abstract LIKE "%${search}%"
-        `
+        WHERE title LIKE ? OR director LIKE ? OR abstract LIKE ?
+        `;
+        searchParams.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
 
     sql += ` GROUP BY movies.id`;
 
-    connection.query(sql, (err, results) => {
+    connection.query(sql, searchParams, (err, results) => {
         if (err) return res.status(500).json({
             error: 'Database query error!'
         });
