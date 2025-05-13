@@ -10,7 +10,7 @@ function index(req, res) {
     const searchParams = [];
 
     //query per visualizzare tutti i film
-    let sql = `SELECT movies.*, AVG(reviews.vote) AS mean_votes
+    let sql = `SELECT movies.*, ROUND(AVG(reviews.vote), 2) AS mean_votes
     FROM
         movies
     LEFT JOIN
@@ -44,7 +44,12 @@ function show(req, res) {
     let id = parseInt(req.params.id);
 
     //query per visualizzare un movie
-    const sql = `SELECT * FROM movies WHERE id= ?`;
+    const sql = `SELECT movies.*, ROUND(AVG(reviews.vote), 2) AS mean_votes
+    FROM
+        movies
+    LEFT JOIN
+        reviews ON movies.id = reviews.movie_id
+    WHERE movies.id = ?`;
 
     connection.query(sql, [id], (err, movieResults) => {
         if (err) return res.status(500).json({ error: 'Database query failed' });
