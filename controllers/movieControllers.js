@@ -78,4 +78,12 @@ function show(req, res) {
 
 }
 
-module.exports = { index, show };
+//store
+function storeReview(req, res) {
+
+    let id = parseInt(req.params.id);
+
+    res.send(`Aggiunta una nuova recensione del film con id: ${id}`);
+}
+
+module.exports = { index, show, storeReview };
