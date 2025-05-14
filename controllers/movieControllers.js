@@ -1,4 +1,5 @@
 //importo connection
+const { text } = require('express');
 const connection = require('../data/db');
 
 //index
@@ -78,12 +79,23 @@ function show(req, res) {
 
 }
 
-//store
+//store review
 function storeReview(req, res) {
 
     let id = parseInt(req.params.id);
 
-    res.send(`Aggiunta una nuova recensione del film con id: ${id}`);
+    const { name, vote, text } = req.body;
+
+    const sql = `INSERT INTO db_movies.reviews (movie_id, name, vote, text) 
+    VALUES (?, ?, ?, ?);`
+
+    connection.query(sql, [id, name, vote, text], (err, results) => {
+        if (err) return res.status(500).json({ error: 'Database query failed!' });
+        res.status(201).json({
+            message: 'A new review is added!',
+            review: { movie_id: id, name, vote, text }
+        })
+    })
 }
 
 module.exports = { index, show, storeReview };
