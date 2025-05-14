@@ -100,12 +100,14 @@ function storeReview(req, res) {
 //store movie
 function storeMovie(req, res) {
 
-    const { title, director, abstract } = req.body;
+    const { title, director, abstract, image } = req.body;
 
-    const sql = `INSERT INTO db_movies.movies (title, director, abstract) 
-    VALUES (?, ?, ?);`
+    const imageName = req.file.filename;
 
-    connection.query(sql, [title, director, abstract], (err, results) => {
+    const sql = `INSERT INTO db_movies.movies (title, director, abstract, image) 
+    VALUES (?, ?, ?, ?);`
+
+    connection.query(sql, [title, director, abstract, imageName], (err, results) => {
         if (err) return res.status(500).json({ error: 'Database query failed!' });
         res.status(201).json({
             message: 'A new movie is added!'
