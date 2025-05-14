@@ -1,5 +1,4 @@
 //importo connection
-const { text } = require('express');
 const connection = require('../data/db');
 
 //index
@@ -98,4 +97,20 @@ function storeReview(req, res) {
     })
 }
 
-module.exports = { index, show, storeReview };
+//store movie
+function storeMovie(req, res) {
+
+    const { title, director, abstract } = req.body;
+
+    const sql = `INSERT INTO db_movies.movies (title, director, abstract) 
+    VALUES (?, ?, ?);`
+
+    connection.query(sql, [title, director, abstract], (err, results) => {
+        if (err) return res.status(500).json({ error: 'Database query failed!' });
+        res.status(201).json({
+            message: 'A new movie is added!'
+        })
+    })
+}
+
+module.exports = { index, show, storeReview, storeMovie };

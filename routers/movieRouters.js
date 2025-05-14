@@ -12,7 +12,10 @@ router.get('/', movieControllers.index);
 //show
 router.get('/:id', movieControllers.show);
 
-//store
+//store review
 router.post('/:id/reviews', movieControllers.storeReview);
+
+//store movie
+router.post('/', movieControllers.storeMovie);
 
 module.exports = router;
