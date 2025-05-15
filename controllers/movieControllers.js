@@ -1,5 +1,6 @@
 //importo connection
 const connection = require('../data/db');
+const slugify = require('slugify');
 
 //index
 function index(req, res) {
@@ -40,20 +41,22 @@ function index(req, res) {
 //show
 function show(req, res) {
 
-    //ricavo l'id per identificare il singolo movie
-    let id = parseInt(req.params.id);
+    //ricavo lo slug per identificare il singolo movie
+    let slug = req.params.slug;
 
     //query per visualizzare un movie
-    const sql = `SELECT movies.*, ROUND(AVG(reviews.vote), 2) AS mean_votes
+    const sqlMovie = `SELECT movies.*, ROUND(AVG(reviews.vote), 2) AS mean_votes
     FROM
         movies
     LEFT JOIN
         reviews ON movies.id = reviews.movie_id
-    WHERE movies.id = ?`;
+    WHERE movies.slug = ?
+    GROUP BY movies.id`;
 
-    connection.query(sql, [id], (err, movieResults) => {
+    connection.query(sqlMovie, [slug], (err, movieResults) => {
+
         if (err) return res.status(500).json({ error: 'Database query failed' });
-        if (movieResults.length === 0) return res.status(404).json({
+        if (movieResults.length === 0 || movieResults[0]?.id === null) return res.status(404).json({
             error: 'Movie non trovato!'
         });
 
@@ -62,14 +65,16 @@ function show(req, res) {
             image: process.env.IMAGE_PATH + 'movies_cover/' + movieResults[0].image
         };
 
+        const movieId = movieResults[0].id;
+
         //query per visualizzare le reviews
-        const sql = `SELECT reviews.* 
+        const sqlReview = `SELECT reviews.* 
                         FROM
                             reviews
                     JOIN movies ON movies.id = reviews.movie_id
                     WHERE reviews.movie_id =?`
 
-        connection.query(sql, [id], (err, reviewRes) => {
+        connection.query(sqlReview, [movieId], (err, reviewRes) => {
             if (err) return res.status(500).json({ error: 'Database query failed!' });
             movie.reviews = reviewRes;
             res.json(movie);
@@ -100,14 +105,19 @@ function storeReview(req, res) {
 //store movie
 function storeMovie(req, res) {
 
-    const { title, director, abstract, image } = req.body;
+    const { title, director, abstract } = req.body;
 
     const imageName = req.file.filename;
 
-    const sql = `INSERT INTO db_movies.movies (title, director, abstract, image) 
-    VALUES (?, ?, ?, ?);`
+    const sql = `INSERT INTO db_movies.movies (title, director, abstract, image, slug) 
+    VALUES (?, ?, ?, ?, ?);`
 
-    connection.query(sql, [title, director, abstract, imageName], (err, results) => {
+    const slug = slugify(title, {
+        lower: true,
+        trim: true
+    })
+
+    connection.query(sql, [title, director, abstract, imageName, slug], (err, results) => {
         if (err) return res.status(500).json({ error: 'Database query failed!' });
         res.status(201).json({
             message: 'A new movie is added!'
