@@ -12,7 +12,7 @@ const upload = require('../middleware/multer');
 router.get('/', movieControllers.index);
 
 //show
-router.get('/:id', movieControllers.show);
+router.get('/:slug', movieControllers.show);
 
 //store review
 router.post('/:id/reviews', movieControllers.storeReview);
